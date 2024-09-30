@@ -1,0 +1,13 @@
+prefix=/home/roberta-abreu/gitDesktop/Back-DomRock/preprocessamento/envs/default
+exec_prefix=/home/roberta-abreu/gitDesktop/Back-DomRock/preprocessamento/envs/default
+libdir=/home/roberta-abreu/gitDesktop/Back-DomRock/preprocessamento/envs/default/lib
+sharedlibdir=/home/roberta-abreu/gitDesktop/Back-DomRock/preprocessamento/envs/default/lib
+includedir=/home/roberta-abreu/gitDesktop/Back-DomRock/preprocessamento/envs/default/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}
