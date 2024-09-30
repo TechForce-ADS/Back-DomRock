@@ -1,5 +1,0 @@
-pandas
-sentence-transformers
-chromadb
-google-generativeai
-ipykernel
