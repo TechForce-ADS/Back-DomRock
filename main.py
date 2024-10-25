@@ -104,7 +104,7 @@ def gerar_grafico_sentimento(sentiment_summary):
     plt.show()
 
 # Função para criar um prompt dinâmico
-def create_dynamic_prompt(context_type, question_type):
+def prompt_dynamic(context_type, question_type):
     template = f"""
     Contexto: {{context}}
 
@@ -115,7 +115,7 @@ def create_dynamic_prompt(context_type, question_type):
     return ChatPromptTemplate.from_template(template)
 
 # Função para criar um prompt específico
-def create_specific_prompt(context_type, question_type):
+def prompt_specific(context_type, question_type):
     template = f"""
     Você está recebendo informações sobre ({context_type}). Utilize essas informações para responder à pergunta a seguir:
 
