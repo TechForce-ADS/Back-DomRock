@@ -34,10 +34,16 @@ def expand_query(query):
 # Carrega o CSV com os dados pré-processados
 data = pd.read_csv("./dataset_preprocessed.csv")
 
+# Transforma a coluna de nota em inteiros.
+data["overall_rating"] = data["overall_rating"].str[-1].astype(int)
+
+# Cria a coluna "overall_mean" com a média das avalições das reviews. 
+data['overall_mean'] = data.groupby('product_name')['overall_rating'].transform('mean')
+
 # Cria nova lista onde cada elemento é um chunk contendo o nome e a review
 new_data = []
 for index, row in data.iterrows():
-    result = f"item {index}: {row.product_name}. review: {row.review_text}, categoria-1:{row.site_category_lv1}, categoria-2:{row.site_category_lv2},sexo:{row.reviewer_gender},estado:{row.reviewer_state}"
+    result = f"item {index}: {row.product_name}. review: {row.review_text}, categoria-1:{row.site_category_lv1}, categoria-2:{row.site_category_lv2}, sexo:{row.reviewer_gender}, estado:{row.reviewer_state}, media:{row.overall_mean}"
     new_data.append(preprocess_text(result))
 
 # Carrega o modelo pré-treinado para gerar embeddings
