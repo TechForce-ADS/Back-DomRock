@@ -13,9 +13,21 @@ import matplotlib.pyplot as plt
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
+from collections import deque 
 
 nltk.download('wordnet')
 from nltk.corpus import wordnet
+
+# Cria lista onde será salvo o histórico, maxlen é o tamanho máximo, alterar de acordo com a necessidade do projeto
+history = deque(maxlen=20)
+
+# Função para salvar dados no histórico
+def add_to_history(role, message):
+    history.append({"role": role, "message": message})
+   
+# Função para recuperar dados do histórico 
+def get_chat_history():
+    return "\n".join([f"{msg['role']}: {msg['message']}" for msg in history])
 
 # Função para pré-processar o texto
 def preprocess_text(text):
@@ -116,20 +128,24 @@ def prompt_dynamic(context_type, question_type):
 
     Pergunta ({question_type}): {{input}}
     
-    Baseado no contexto fornecido e no tipo de pergunta, forneça uma resposta clara e concisa.
+    Histórico: ({get_chat_history()})
+    
+    Baseado no contexto fornecido, no histórico da conversa e no tipo de pergunta, forneça uma resposta clara e concisa.
     """
     return ChatPromptTemplate.from_template(template)
 
 # Função para criar um prompt específico
 def prompt_specific(context_type, question_type):
     template = f"""
-    Você está recebendo informações sobre ({context_type}). Utilize essas informações para responder à pergunta a seguir:
+    Você está recebendo informações sobre ({context_type}). Utilize essas informações e o histórico da conversa para responder à pergunta a seguir:
 
     Contexto:
     {{context}}
     
     Pergunta ({question_type}):
     {{input}}
+    
+    Histórico: ({get_chat_history()})
     
     Para responder forneça uma análise geral sobre o produto com base nas avaliações dos usuários. Destaque os principais aspectos positivos e negativos, explicando os pontos mais relevantes em um formato fluido e natural. Conclua com uma recomendação geral, mencionando para quem o produto seria mais adequado e possíveis pontos de atenção. Evite o uso de listas e mantenha o tom de conversa.
 
@@ -141,6 +157,9 @@ while True:
     # Pergunta do usuário
     query = input("Digite a pergunta (ou 'sair' para encerrar, 'gerar gráfico' para ver o gráfico): ")
 
+    # salva a pergunta no histórico
+    add_to_history("User", query)
+    
     # Verifica se o usuário deseja encerrar o loop
     if query.lower() == 'sair':
         print("Encerrando o programa.")
@@ -178,13 +197,16 @@ while True:
         question_type = "Consulta do Usuário"
 
         # Criar o prompt usando uma das funções
-        prompt = create_specific_prompt(context_type, question_type).format(context=context, input=query)
+        prompt = prompt_specific(context_type, question_type).format(context=context, input=query)
 
         # Carrega o modelo que vai interpretar o prompt
         model_gemini = genai.GenerativeModel("gemini-1.5-flash")
 
         # Passa o prompt para gerar a resposta
         response = model_gemini.generate_content(prompt)
+        
+        # salva a resposta no histórico
+        add_to_history("Chatbot", response.text)
 
         # Imprime a resposta gerada
         print("Resposta:", response.text)
