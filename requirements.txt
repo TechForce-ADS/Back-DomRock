@@ -1,5 +1,11 @@
 pandas
 sentence-transformers
-chromadb
 google-generativeai
 ipykernel
+seaborn
+numpy
+textblob
+faiss-cpu
+matplotlib
+nltk
+langchain
