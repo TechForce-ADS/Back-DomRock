@@ -9,3 +9,5 @@ faiss-cpu
 matplotlib
 nltk
 langchain
+flask-login
+psycopg2
